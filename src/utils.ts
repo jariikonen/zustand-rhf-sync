@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-for-in-array */
 import { Path, PathValue } from "react-hook-form";
 
 /**
@@ -12,7 +13,7 @@ import { Path, PathValue } from "react-hook-form";
  * @param pathPrefix - The path prefix to use for the callback
  */
 function _deepCompareDifferences<
-  T extends Record<string, unknown> | Array<unknown> | unknown,
+  T extends Record<string, unknown> | Array<unknown>,
 >(state: T, prev: T, pathPrefix = ""): [string, unknown][] {
   if (typeof state === "function") return [];
   if (state === prev) return [];
@@ -75,13 +76,13 @@ export function deepCompareDifferences<T extends Record<string, unknown>>(
   ][];
 }
 
-export type RecursiveNonFunction<T> = T extends
+export type OmitFunctionsRecursive<T> = T extends
   | Record<string, unknown>
   | Array<unknown>
   ? {
       [K in keyof T]: T[K] extends (...args: unknown[]) => unknown
         ? never
-        : RecursiveNonFunction<T[K]>;
+        : OmitFunctionsRecursive<T[K]>;
     }
   : T;
 
@@ -93,14 +94,14 @@ export type RecursiveNonFunction<T> = T extends
  */
 export function deepCloneWithoutFunctions<
   T extends Record<string, unknown> | Array<unknown>,
->(a: T): RecursiveNonFunction<T> {
+>(a: T): OmitFunctionsRecursive<T> {
   if (Array.isArray(a)) {
     return a.map((value) => {
       if (value === null || typeof value !== "object") return value;
       return deepCloneWithoutFunctions(
         value as Record<string, unknown> | Array<unknown>,
       );
-    }) as unknown as RecursiveNonFunction<T>;
+    }) as unknown as OmitFunctionsRecursive<T>;
   }
   const result = {} as T;
   for (const key in a) {
@@ -114,5 +115,5 @@ export function deepCloneWithoutFunctions<
       }
     }
   }
-  return result as RecursiveNonFunction<T>;
+  return result as OmitFunctionsRecursive<T>;
 }

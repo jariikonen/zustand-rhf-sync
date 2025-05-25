@@ -35,7 +35,7 @@ it("deepCompareDifferences should work with arrays of arrays", () => {
   ]);
 });
 
-it("deepCompareDifferences should work objects with arrays", () => {
+it("deepCompareDifferences should work with objects with arrays", () => {
   expect(deepCompareDifferences({ a: { b: [1] } }, { a: { b: [2] } })).toEqual([
     ["a.b.0", 1],
   ]);

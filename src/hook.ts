@@ -36,7 +36,6 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
 ): void {
   const mutex = useRef(false);
 
-  // refs that are ignored by useEffect
   const storeSetterRef = useRef(storeSetter);
   const storeSelectorRef = useRef(storeSelector);
   const isSubmittedRef = useRef(formState.isSubmitted);
@@ -55,13 +54,14 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
 
   // syncs form to store
   useEffect(() => {
-    const formWatcher = watch((data) => {
+    const formWatcher = watch((formData) => {
       if (!mutex.current) {
         mutex.current = true;
-        storeSetterRef.current({
+        const newData = {
           ...storeSelectorRef.current(useStore.getState()),
-          ...data,
-        });
+          ...formData,
+        };
+        storeSetterRef.current(newData);
         mutex.current = false;
       }
     });
@@ -98,9 +98,9 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
         // trigger validation after all values have been set
         if (shouldValidate) {
           if (changes.some(([path]) => path === "")) {
-            triggerRef.current();
+            void triggerRef.current();
           } else if (changes.length > 0) {
-            triggerRef.current(
+            void triggerRef.current(
               changes
                 .map(([path]) => path)
                 .filter((path) => path !== "") as Path<TFieldValues>[],
@@ -129,7 +129,7 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
 export function useFormWithStore<
   TStore,
   TFieldValues extends FieldValues,
-  TContext = any,
+  TContext = any, // eslint-disable-line @typescript-eslint/no-explicit-any
 >(
   useStore: UseBoundStore<StoreApi<TStore>>,
   storeSetter: (values: TFieldValues) => void,

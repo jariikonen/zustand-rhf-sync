@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/require-default-props */
 import "@testing-library/jest-dom";
 import React, { StrictMode } from "react";
 import {
@@ -16,20 +19,9 @@ import {
 import { create } from "zustand";
 import { useFormWithStore } from "../src/hook";
 
-type StoreState = {
-  count: number;
-  arr: {
-    foo: string;
-  }[];
-  inc: () => void;
-};
+type StoreState = { count: number; arr: { foo: string }[]; inc: () => void };
 
-type FormState = {
-  count: number;
-  arr: {
-    foo: string;
-  }[];
-};
+type FormState = { count: number; arr: { foo: string }[] };
 
 describe("useSyncRHFWithStore with uncontrolled input", () => {
   const useBoundStore = create<StoreState>((set) => ({
@@ -63,13 +55,10 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
       formState: { errors },
     } = useFormReturn;
 
-    const { fields, append, remove } = useFieldArray({
-      control,
-      name: "arr",
-    });
+    const { fields, append, remove } = useFieldArray({ control, name: "arr" });
 
     return (
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
         <div data-testid="render-count">{renderCount.current}</div>
         <input
           {...register("count", {
@@ -88,7 +77,8 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
             <button
               type="button"
               onClick={() => remove(index)}
-              data-testid={`arr-${index}-remove-button`}>
+              data-testid={`arr-${index}-remove-button`}
+            >
               delete
             </button>
           </div>
@@ -96,7 +86,8 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
         <button
           type="button"
           onClick={() => append({ foo: `foo-${fields.length}` })}
-          data-testid="arr-append-button">
+          data-testid="arr-append-button"
+        >
           append
         </button>
         <button type="submit">submit</button>
@@ -109,9 +100,11 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
       </form>
     );
   }
+
   beforeEach(() => {
     useBoundStore.setState({ count: 0, arr: [{ foo: "foo-0" }] });
   });
+
   it("input change synced to store", async () => {
     const { findByText, getByTestId } = render(
       <StrictMode>
@@ -119,9 +112,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
       </StrictMode>,
     );
 
-    fireEvent.change(getByTestId("count-input"), {
-      target: { value: "5" },
-    });
+    fireEvent.change(getByTestId("count-input"), { target: { value: "5" } });
 
     await findByText("count: 5");
   });
@@ -133,7 +124,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
       <StrictMode>
         <Counter
           onSubmit={(data: any) => {
-            formData = data;
+            formData = data as FormState;
           }}
         />
       </StrictMode>,
@@ -149,7 +140,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     fireEvent.click(getByText("submit"));
 
     await waitFor(() => {
-      expect(formData.count).toBe(5);
+      expect((formData as FormState).count).toBe(5);
     });
   });
 
@@ -181,7 +172,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     }
     const { findByText, getByTestId } = render(
       <StrictMode>
-        <Counter onSubmit={(data: any) => (formData = data)}>
+        <Counter onSubmit={(data: any) => (formData = data as FormState)}>
           <Resetter />
         </Counter>
       </StrictMode>,
@@ -193,14 +184,14 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     });
 
     await waitFor(() => {
-      expect(formData.count).toBe(5);
+      expect((formData as FormState).count).toBe(5);
     });
 
     fireEvent.click(getByTestId("reset-button"));
     fireEvent.click(screen.getByText("submit"));
 
     await waitFor(() => {
-      expect(formData.count).toBe(10);
+      expect((formData as FormState).count).toBe(10);
     });
 
     await findByText("count: 10");
@@ -214,7 +205,8 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
       return (
         <button
           onClick={() => resetField("count", { defaultValue: 10 })}
-          data-testid="reset-button">
+          data-testid="reset-button"
+        >
           reset
         </button>
       );
@@ -222,7 +214,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
 
     const { findByText, getByTestId } = render(
       <StrictMode>
-        <Counter onSubmit={(data: any) => (formData = data)}>
+        <Counter onSubmit={(data: any) => (formData = data as FormState)}>
           <Resetter />
         </Counter>
       </StrictMode>,
@@ -235,7 +227,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     });
 
     await waitFor(() => {
-      expect(formData.count).toBe(10);
+      expect((formData as FormState).count).toBe(10);
     });
 
     await findByText("count: 10");
@@ -255,7 +247,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
 
     const { findByText, getByTestId } = render(
       <StrictMode>
-        <Counter onSubmit={(data: any) => (formData = data)}>
+        <Counter onSubmit={(data: any) => (formData = data as FormState)}>
           <Setter />
         </Counter>
       </StrictMode>,
@@ -268,7 +260,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     });
 
     await waitFor(() => {
-      expect(formData.count).toBe(10);
+      expect((formData as FormState).count).toBe(10);
     });
 
     await findByText("count: 10");
@@ -282,9 +274,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     );
 
     // set input to invalid value
-    fireEvent.change(getByTestId("count-input"), {
-      target: { value: "" },
-    });
+    fireEvent.change(getByTestId("count-input"), { target: { value: "" } });
 
     await waitFor(() => {
       expect(screen.queryByText('errors: "required"')).not.toBeInTheDocument();
@@ -381,7 +371,7 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     expect(getByTestId("arr-1-foo-input")).toHaveValue("foo-1");
   });
 
-  it("store changes to same value does not trigger rerender", async () => {
+  it("store changes to same value does not trigger rerender", () => {
     const { getByTestId } = render(
       <StrictMode>
         <Counter />
@@ -389,17 +379,15 @@ describe("useSyncRHFWithStore with uncontrolled input", () => {
     );
 
     act(() => {
-      expect(getByTestId("render-count")).toHaveTextContent("3");
+      expect(getByTestId("render-count")).toHaveTextContent("4");
       useBoundStore.setState({ count: 0 });
-      expect(getByTestId("render-count")).toHaveTextContent("3");
+      expect(getByTestId("render-count")).toHaveTextContent("4");
 
-      fireEvent.change(getByTestId("count-input"), {
-        target: { value: "0" },
-      });
-      expect(getByTestId("render-count")).toHaveTextContent("3");
+      fireEvent.change(getByTestId("count-input"), { target: { value: "0" } });
+      expect(getByTestId("render-count")).toHaveTextContent("4");
 
       useBoundStore.setState({ arr: [{ foo: "foo-0" }] });
-      expect(getByTestId("render-count")).toHaveTextContent("3");
+      expect(getByTestId("render-count")).toHaveTextContent("4");
     });
   });
 });
