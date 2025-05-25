@@ -52,3 +52,37 @@ it("deepCompareDifferences should work with multiple differences", () => {
     ["a.c", 3],
   ]);
 });
+
+// When does deepCompareDifferences return an empty path?
+it("deepCompareDifferences returns an empty path when objects contain empty string as key and values differ", () => {
+  expect(deepCompareDifferences({ "": { a: 1 } }, {})).toEqual([
+    ["", { a: 1 }],
+  ]);
+});
+
+it("deepCompareDifferences returns an empty path when state and prev are different primitive values (with type misuse)", () => {
+  expect(
+    deepCompareDifferences(
+      1 as unknown as Record<string, unknown>,
+      2 as unknown as Record<string, unknown>,
+    ),
+  ).toEqual([["", 1]]);
+});
+
+it("deepCompareDifferences returns an empty path when state and prev are arrays of different lengths (with type misuse)", () => {
+  expect(
+    deepCompareDifferences(
+      [1] as unknown as Record<string, unknown>,
+      [1, 2] as unknown as Record<string, unknown>,
+    ),
+  ).toEqual([["", [1]]]);
+});
+
+it("deepCompareDifferences returns an empty path when either of state and prev is null (with type misuse)", () => {
+  expect(
+    deepCompareDifferences(
+      [1] as unknown as Record<string, unknown>,
+      null as unknown as Record<string, unknown>,
+    ),
+  ).toEqual([["", [1]]]);
+});

@@ -83,11 +83,9 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
         );
         changes.forEach(([path, newValue]) => {
           if (path === "") {
-            resetRef.current(newValue, {
-              keepDirty: true,
-              keepErrors: true,
-              keepTouched: true,
-            });
+            console.warn(
+              "Empty path detected in store update. This may lead to unexpected behavior.",
+            );
             return;
           }
           setValueRef.current(path, newValue, {
