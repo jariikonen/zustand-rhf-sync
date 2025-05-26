@@ -1,5 +1,5 @@
 {
-  "name": "zustand-rhf-sync",
+  "name": "@jariikonen/zustand-rhf-sync",
   "version": "0.0.9",
   "description": "Syncs the state of react-hook-form and zustand so that changes in one is updated in the other",
   "author": "lenwhite",
@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/instawork/zustand-rhf-sync.git"
+    "url": "git+https://github.com/jariikonen/zustand-rhf-sync.git"
   },
   "types": "dist/index.d.ts",
   "files": [
