@@ -3,8 +3,9 @@
     "jsx": "react-jsx",
 
     "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
 
@@ -14,6 +15,12 @@
     "noEmit": true,
     "baseUrl": "./src"
   },
-  "include": ["src", "tests", "vitest.config.ts", "tsup.config.ts"],
+  "include": [
+    "src",
+    "tests",
+    "vitest.config.ts",
+    "tsup.config.ts",
+    "src/types/env.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

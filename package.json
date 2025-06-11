@@ -18,6 +18,7 @@
     "@eslint/js": "^9.27.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.0.0",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.27.0",
@@ -52,6 +53,7 @@
     "test": "vitest run",
     "prettier": "prettier \"*.{js,json,md}\" \"{examples,src,tests,docs}/**/*.{js,jsx,ts,tsx,md,mdx}\" --write",
     "eslint": "eslint '*.{js,json,ts}' '{src,tests}/**/*.{ts,tsx}'",
-    "build": "tsup"
+    "build": "tsup",
+    "build-with-debug-printing": "tsup --env.NODE_ENV 'development'"
   }
 }
