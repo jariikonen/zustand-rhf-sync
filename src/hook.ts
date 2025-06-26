@@ -7,6 +7,7 @@ import {
   UseFormProps,
   UseFormReturn,
   useForm,
+  useWatch,
 } from "react-hook-form";
 import { StoreApi, UseBoundStore } from "zustand";
 import { deepCloneWithoutFunctions, deepCompareDifferences } from "./utils";
@@ -25,7 +26,7 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
   storeSetter: (formValue: TFieldValues) => void,
   storeSelector: (state: TStore) => TFieldValues,
   {
-    watch,
+    control,
     setValue,
     trigger,
     reset,
@@ -37,6 +38,9 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
 ): void {
   // To prevent infinite loops between form and store.
   const mutex = useRef(false);
+
+  // Subscribe to watch all form values.
+  const watchedFormValues = useWatch({ control });
 
   // Store refs for stable access within callbacks.
   const storeSetterRef = useRef(storeSetter);
@@ -148,17 +152,12 @@ export function useSyncRHFWithStore<TStore, TFieldValues extends FieldValues>(
     [useStore],
   );
 
-  // Syncs form to store: subscribe to RHF's watch.
+  // Sync form to store.
   useEffect(() => {
-    const formWatcher = watch(handleFormChange);
-    logger.log("RHF watcher subscribed.");
-    return () => {
-      formWatcher.unsubscribe();
-      logger.log("RHF watcher unsubscribed.");
-    };
-  }, [handleFormChange, watch]);
+    handleFormChange(watchedFormValues);
+  }, [handleFormChange, watchedFormValues]);
 
-  // Syncs store to form: subscribe to Zustand store changes.
+  // Sync store to form: subscribe to Zustand store changes.
   useEffect(() => {
     const unsubscribe = useStore.subscribe(handleStoreChange);
     logger.log("Zustand subscriber subscribed.");
